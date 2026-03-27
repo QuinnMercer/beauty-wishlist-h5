@@ -1,0 +1,2310 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <title>美妆种草清单助手</title>
+    <style>
+      :root {
+        --bg: #fdf8f0;
+        --card: #ffffff;
+        --text: #222222;
+        --muted: rgba(34, 34, 34, 0.55);
+        --border: rgba(34, 34, 34, 0.12);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        --primary: #f5a9a9;
+        --primary-2: #ffb7b2;
+        --green: #1e9b5a;
+        --danger: #e34d4d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: calc(100vw / 23.4375);
+      }
+
+      @media (min-width: 480px) {
+        html {
+          font-size: 20px;
+        }
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .app {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: 3.25rem;
+        padding: 0 1rem;
+        background: var(--bg);
+        display: grid;
+        grid-template-columns: 2.5rem 1fr 4.75rem;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .topbar::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: rgba(34, 34, 34, 0.06);
+      }
+
+      .topbar-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .topbar-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.35rem;
+      }
+
+      .icon-btn {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        width: 2.25rem;
+        height: 2.25rem;
+        display: grid;
+        place-items: center;
+        border-radius: 0.75rem;
+        color: var(--text);
+      }
+
+      .icon-btn:active {
+        background: rgba(0, 0, 0, 0.06);
+      }
+
+      .searchbar {
+        padding: 0.5rem 1rem 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        background: var(--bg);
+        position: sticky;
+        top: 3.25rem;
+        z-index: 19;
+      }
+
+      .searchbar input {
+        flex: 1;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.55rem 0.9rem;
+        background: rgba(255, 255, 255, 0.85);
+        outline: none;
+      }
+
+      .searchbar input:focus {
+        border-color: rgba(245, 169, 169, 0.85);
+        box-shadow: 0 0 0 4px rgba(245, 169, 169, 0.18);
+      }
+
+      .pill-btn {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.85);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 0.45rem 0.8rem;
+        white-space: nowrap;
+      }
+
+      .pill-btn:active {
+        transform: translateY(1px);
+      }
+
+      .pages {
+        flex: 1;
+        padding: 0.75rem 1rem 5.5rem;
+      }
+
+      .page {
+        display: none;
+        animation: page-in 160ms ease-out;
+      }
+
+      .page.is-active {
+        display: block;
+      }
+
+      @keyframes page-in {
+        from {
+          opacity: 0.7;
+          transform: translateX(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .home-toolbar {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .primary-btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.6rem 1rem;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        box-shadow: 0 6px 20px rgba(245, 169, 169, 0.25);
+      }
+
+      .primary-btn.small {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.95rem;
+      }
+
+      .primary-btn:active {
+        transform: translateY(1px);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .card {
+        border: 0;
+        padding: 0;
+        text-align: left;
+        background: transparent;
+      }
+
+      .card-shell {
+        background: var(--card);
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transform-style: preserve-3d;
+        transition: transform 380ms ease;
+        position: relative;
+        min-height: 11.25rem;
+      }
+
+      .card-shell.is-flipping {
+        transform: rotateY(180deg);
+      }
+
+      .card-face {
+        padding: 0.75rem;
+        backface-visibility: hidden;
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .card-back {
+        transform: rotateY(180deg);
+      }
+
+      .card-img {
+        width: 100%;
+        border-radius: 0.75rem;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        background: rgba(0, 0, 0, 0.04);
+      }
+
+      .brand {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .pname {
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .shade {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .price {
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .price .val {
+        color: var(--green);
+        font-weight: 700;
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.95);
+        background: rgba(245, 169, 169, 0.95);
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+      }
+
+      .empty {
+        margin-top: 2.25rem;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(34, 34, 34, 0.07);
+        border-radius: 1rem;
+        padding: 0.9rem;
+        box-shadow: var(--shadow);
+      }
+
+      .section-title {
+        font-weight: 800;
+        margin: 0 0 0.6rem 0;
+        font-size: 1rem;
+      }
+
+      .kv {
+        display: grid;
+        grid-template-columns: 4.25rem 1fr;
+        gap: 0.25rem 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .kv .k {
+        color: var(--muted);
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .field label {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .field input,
+      .field textarea,
+      .field select {
+        border: 1px solid var(--border);
+        border-radius: 0.9rem;
+        padding: 0.65rem 0.75rem;
+        background: rgba(255, 255, 255, 0.9);
+        outline: none;
+      }
+
+      .field textarea {
+        min-height: 6.5rem;
+        resize: vertical;
+      }
+
+      .field input:focus,
+      .field textarea:focus,
+      .field select:focus {
+        border-color: rgba(245, 169, 169, 0.9);
+        box-shadow: 0 0 0 4px rgba(245, 169, 169, 0.18);
+      }
+
+      .row {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+      }
+
+      .row.justify {
+        justify-content: space-between;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .list-item {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: var(--shadow);
+      }
+
+      .list-item:active {
+        transform: translateY(1px);
+      }
+
+      .thumb {
+        width: 3.1rem;
+        height: 3.1rem;
+        border-radius: 0.9rem;
+        object-fit: cover;
+        background: rgba(0, 0, 0, 0.04);
+        flex: 0 0 auto;
+      }
+
+      .li-main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .li-title {
+        font-weight: 800;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .li-sub {
+        margin-top: 0.25rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .li-meta {
+        text-align: right;
+        flex: 0 0 auto;
+      }
+
+      .meta-strong {
+        font-weight: 800;
+        color: var(--green);
+      }
+
+      .meta-weak {
+        margin-top: 0.25rem;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      .actionbar {
+        position: sticky;
+        bottom: 5.5rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.85rem;
+      }
+
+      .ghost-btn {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 999px;
+        padding: 0.6rem 0.75rem;
+      }
+
+      .danger-btn {
+        border: 1px solid rgba(227, 77, 77, 0.45);
+        background: rgba(227, 77, 77, 0.08);
+        color: var(--danger);
+        border-radius: 999px;
+        padding: 0.6rem 0.75rem;
+      }
+
+      .tabbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4.75rem;
+        background: #fff;
+        box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.06);
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        padding: 0.4rem 0.6rem calc(0.4rem + env(safe-area-inset-bottom));
+        z-index: 25;
+      }
+
+      .tab {
+        border: 0;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        color: var(--muted);
+        border-radius: 1rem;
+      }
+
+      .tab span {
+        font-size: 0.75rem;
+      }
+
+      .tab.is-active {
+        color: rgba(245, 169, 169, 1);
+      }
+
+      .tab-add {
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: #fff;
+        width: 3.2rem;
+        height: 3.2rem;
+        border-radius: 1.25rem;
+        margin: -1.25rem auto 0;
+        box-shadow: 0 14px 30px rgba(245, 169, 169, 0.3);
+        font-size: 1.35rem;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: flex-end;
+        z-index: 50;
+        padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+      }
+
+      .overlay.is-open {
+        display: flex;
+      }
+
+      .modal {
+        width: 100%;
+        background: #fff;
+        border-radius: 1.25rem;
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        transform: translateY(6px);
+        animation: modal-in 160ms ease-out;
+      }
+
+      @keyframes modal-in {
+        from {
+          opacity: 0.85;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(6px);
+        }
+      }
+
+      .modal-head {
+        padding: 0.9rem 1rem 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(34, 34, 34, 0.08);
+      }
+
+      .modal-title {
+        font-weight: 900;
+      }
+
+      .modal-body {
+        padding: 0.9rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 65vh;
+        overflow: auto;
+      }
+
+      .modal-actions {
+        padding: 0.75rem 1rem 1rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+      }
+
+      .modal-actions.one {
+        grid-template-columns: 1fr;
+      }
+
+      .stepper {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .step {
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(34, 34, 34, 0.08);
+        border-radius: 1rem;
+        padding: 0.5rem 0.65rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .dot {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 999px;
+        background: rgba(34, 34, 34, 0.2);
+      }
+
+      .step.is-active {
+        color: var(--text);
+        border-color: rgba(245, 169, 169, 0.45);
+        box-shadow: 0 6px 16px rgba(245, 169, 169, 0.14);
+      }
+
+      .step.is-active .dot {
+        background: rgba(245, 169, 169, 0.95);
+      }
+
+      .upload-area {
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px dashed rgba(34, 34, 34, 0.22);
+        border-radius: 1.25rem;
+        padding: 1rem;
+        box-shadow: var(--shadow);
+      }
+
+      .upload-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-top: 0.75rem;
+      }
+
+      .sample-gallery {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+
+      .sample-tile {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1rem;
+        padding: 0.35rem;
+      }
+
+      .sample-tile:active {
+        transform: translateY(1px);
+      }
+
+      .sample-img {
+        width: 100%;
+        border-radius: 0.8rem;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        background: rgba(0, 0, 0, 0.04);
+      }
+
+      .sample-cap {
+        margin-top: 0.35rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 0.6rem;
+      }
+
+      .spinner {
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 999px;
+        border: 3px solid rgba(34, 34, 34, 0.12);
+        border-top-color: rgba(245, 169, 169, 0.95);
+        animation: spin 0.9s linear infinite;
+        margin: 1rem auto 0.75rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .big-card {
+        width: 100%;
+        height: 14.75rem;
+        border-radius: 1.25rem;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        perspective: 1100px;
+      }
+
+      .big-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 1.25rem;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 520ms ease;
+      }
+
+      .big-card.is-flipped .big-inner {
+        transform: rotateY(180deg);
+      }
+
+      .big-face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        border-radius: 1.25rem;
+        background: var(--card);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .big-face.back {
+        transform: rotateY(180deg);
+      }
+
+      .big-img {
+        width: 100%;
+        height: 9.25rem;
+        object-fit: cover;
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .big-meta {
+        padding: 0.85rem 0.9rem 0.9rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="topbar">
+        <button class="icon-btn" id="backBtn" aria-label="返回" hidden>←</button>
+        <div class="topbar-title" id="topbarTitle">我的种草清单</div>
+        <div class="topbar-actions" id="topbarActions">
+          <button class="icon-btn" id="searchBtn" aria-label="搜索">🔍</button>
+          <button class="icon-btn" id="menuBtn" aria-label="菜单">⋮</button>
+        </div>
+      </header>
+
+      <div class="searchbar" id="searchbar" hidden>
+        <input id="searchInput" type="search" placeholder="搜索品牌 / 产品名 / 色号" autocomplete="off" />
+        <button class="pill-btn" id="searchCancelBtn">取消</button>
+      </div>
+
+      <main class="pages">
+        <section class="page is-active" id="page-home" aria-label="首页">
+          <div class="home-toolbar">
+            <button class="pill-btn" id="categoryPill">全部 ▾</button>
+            <div class="spacer"></div>
+            <button class="primary-btn small" id="aiAddBtn">上传识别</button>
+          </div>
+
+          <div class="grid" id="productGrid"></div>
+          <div class="empty" id="homeEmpty" hidden>还没有产品，点击“上传识别”开始创建你的种草清单。</div>
+        </section>
+
+        <section class="page" id="page-detail" aria-label="卡片详情">
+          <button class="big-card" id="detailFlipBtn" aria-label="翻转卡片">
+            <div class="big-inner" id="detailBigInner"></div>
+          </button>
+
+          <div style="height: 0.75rem"></div>
+
+          <div class="panel" id="detailInfoPanel"></div>
+
+          <div style="height: 0.75rem"></div>
+
+          <div class="panel">
+            <h3 class="section-title">笔记</h3>
+            <div class="field">
+              <label for="detailSource">种草来源（博主 / 链接）</label>
+              <input id="detailSource" placeholder="例如：XX博主 / 视频链接" />
+            </div>
+            <div style="height: 0.65rem"></div>
+            <div class="field">
+              <label for="detailNotes">个人备注</label>
+              <textarea id="detailNotes" placeholder="记录你的想法、对色号的偏好、适合场景等"></textarea>
+            </div>
+            <div style="height: 0.75rem"></div>
+            <button class="primary-btn" id="saveNotesBtn">保存笔记</button>
+          </div>
+
+          <div style="height: 0.75rem"></div>
+
+          <div class="panel" id="detailPricePanel"></div>
+
+          <div class="actionbar">
+            <button class="ghost-btn" id="editProductBtn">编辑信息</button>
+            <button class="ghost-btn" id="toggleTrackingBtn">加入追踪</button>
+            <button class="danger-btn" id="deleteProductBtn">删除</button>
+          </div>
+
+          <div style="height: 0.75rem"></div>
+          <button class="primary-btn" id="recordPriceBtn">记录价格</button>
+        </section>
+
+        <section class="page" id="page-add" aria-label="添加流程">
+          <div class="stepper">
+            <div class="step is-active" id="step1">
+              <div class="dot"></div>
+              <div>上传图片</div>
+            </div>
+            <div class="step" id="step2">
+              <div class="dot"></div>
+              <div>识别中</div>
+            </div>
+            <div class="step" id="step3">
+              <div class="dot"></div>
+              <div>确认编辑</div>
+            </div>
+          </div>
+
+          <div class="upload-area" id="addStep1">
+            <div class="row justify">
+              <div style="font-weight: 900">上传清单截图</div>
+              <button class="pill-btn" id="useDemoBtn">使用示例</button>
+            </div>
+            <div style="height: 0.75rem"></div>
+            <div class="panel" style="background: rgba(255, 255, 255, 0.86)">
+              <div class="muted">📸 点击拍照 / 📁 从相册选择</div>
+              <div class="hint">支持 JPG/PNG，建议清单截图。</div>
+              <div style="height: 0.6rem"></div>
+              <img id="uploadPreview" class="card-img" alt="预览" style="display: none" />
+              <div id="sampleGallery" class="sample-gallery" aria-label="测试样例"></div>
+              <div class="upload-actions">
+                <button class="primary-btn" id="cameraBtn">点击拍照</button>
+                <button class="primary-btn" id="albumBtn">从相册选择</button>
+              </div>
+            </div>
+            <input id="fileInput" type="file" accept="image/*" capture="environment" hidden />
+          </div>
+
+          <div class="upload-area" id="addStep2" hidden>
+            <div class="spinner"></div>
+            <div style="text-align: center; font-weight: 800">AI 分析中，正在提取产品…</div>
+            <div class="hint" style="text-align: center">此演示使用预设数据模拟识别结果。</div>
+          </div>
+
+          <div id="addStep3" hidden>
+            <div class="panel">
+              <h3 class="section-title">识别结果确认</h3>
+              <div class="list" id="recognizedList"></div>
+              <div style="height: 0.75rem"></div>
+              <button class="ghost-btn" id="manualAddBtn">➕ 手动添加产品</button>
+              <div style="height: 0.65rem"></div>
+              <button class="primary-btn" id="saveRecognizedBtn">保存到清单</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-tracking" aria-label="价格追踪">
+          <div class="list" id="trackingList"></div>
+          <div class="empty" id="trackingEmpty" hidden>还没有加入追踪的产品。</div>
+        </section>
+
+        <section class="page" id="page-categories" aria-label="分类筛选">
+          <div class="panel">
+            <h3 class="section-title">分类</h3>
+            <div class="list" id="categoryList"></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-me" aria-label="我的">
+          <div class="panel">
+            <div class="row" style="gap: 0.75rem">
+              <div
+                style="
+                  width: 3.25rem;
+                  height: 3.25rem;
+                  border-radius: 1.25rem;
+                  background: linear-gradient(135deg, rgba(245, 169, 169, 0.95), rgba(255, 183, 178, 0.95));
+                  display: grid;
+                  place-items: center;
+                  font-weight: 900;
+                  color: #fff;
+                "
+              >
+                我
+              </div>
+              <div style="flex: 1">
+                <div style="font-weight: 900">未登录用户</div>
+                <div class="muted" style="font-size: 0.85rem; margin-top: 0.15rem">本地保存 · 可清除缓存</div>
+              </div>
+            </div>
+          </div>
+          <div style="height: 0.75rem"></div>
+          <div class="panel">
+            <div class="list">
+              <button class="list-item" id="accountBtn" type="button">
+                <div class="li-main">
+                  <div class="li-title">账号管理</div>
+                  <div class="li-sub">占位展示</div>
+                </div>
+                <div class="li-meta">›</div>
+              </button>
+              <button class="list-item" id="clearCacheBtn" type="button">
+                <div class="li-main">
+                  <div class="li-title">清除缓存</div>
+                  <div class="li-sub">清空本地产品与价格记录</div>
+                </div>
+                <div class="li-meta">›</div>
+              </button>
+              <button class="list-item" id="aboutBtn" type="button">
+                <div class="li-main">
+                  <div class="li-title">关于</div>
+                  <div class="li-sub">美妆种草清单助手</div>
+                </div>
+                <div class="li-meta">›</div>
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="tabbar" aria-label="底部导航">
+        <button class="tab is-active" data-tab="home" type="button">
+          <div>首页</div>
+          <span>种草</span>
+        </button>
+        <button class="tab" data-tab="tracking" type="button">
+          <div>价格追踪</div>
+          <span>追踪</span>
+        </button>
+        <button class="tab tab-add" data-tab="add" type="button" aria-label="添加">
+          ➕
+        </button>
+        <button class="tab" data-tab="categories" type="button">
+          <div>分类</div>
+          <span>筛选</span>
+        </button>
+        <button class="tab" data-tab="me" type="button">
+          <div>我的</div>
+          <span>设置</span>
+        </button>
+      </nav>
+
+      <div class="overlay" id="overlay" role="presentation">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <div class="modal-head">
+            <div class="modal-title" id="modalTitle">标题</div>
+            <button class="icon-btn" id="modalCloseBtn" aria-label="关闭">✕</button>
+          </div>
+          <div class="modal-body" id="modalBody"></div>
+          <div class="modal-actions" id="modalActions"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const CATEGORIES = [
+        "全部",
+        "粉底",
+        "遮瑕",
+        "定妆",
+        "腮红",
+        "修容",
+        "高光",
+        "眼影",
+        "眼线",
+        "睫毛膏",
+        "眉笔",
+        "染眉膏",
+        "口红",
+        "唇部护理",
+        "妆前",
+        "美瞳",
+        "工具",
+        "护肤",
+        "其他",
+      ];
+
+      const STORAGE_KEY = "beauty_wishlist_products_v1";
+      const SAMPLE_IMAGE_URLS = {
+        flower: "./花知晓提亮液.jpg",
+        maogep: "./毛戈平粉底.jpg",
+        blush: "./腮红丝字.jpg",
+      };
+
+      const state = {
+        page: "home",
+        navStack: [],
+        activeCategory: "全部",
+        searchQuery: "",
+        selectedProductId: null,
+        addFlow: {
+          step: 1,
+          imageDataUrl: "",
+          items: [],
+        },
+      };
+
+      const els = {
+        backBtn: document.getElementById("backBtn"),
+        topbarTitle: document.getElementById("topbarTitle"),
+        topbarActions: document.getElementById("topbarActions"),
+        searchBtn: document.getElementById("searchBtn"),
+        menuBtn: document.getElementById("menuBtn"),
+        searchbar: document.getElementById("searchbar"),
+        searchInput: document.getElementById("searchInput"),
+        searchCancelBtn: document.getElementById("searchCancelBtn"),
+
+        pages: {
+          home: document.getElementById("page-home"),
+          detail: document.getElementById("page-detail"),
+          add: document.getElementById("page-add"),
+          tracking: document.getElementById("page-tracking"),
+          categories: document.getElementById("page-categories"),
+          me: document.getElementById("page-me"),
+        },
+
+        tabs: Array.from(document.querySelectorAll(".tabbar .tab")),
+
+        categoryPill: document.getElementById("categoryPill"),
+        aiAddBtn: document.getElementById("aiAddBtn"),
+        productGrid: document.getElementById("productGrid"),
+        homeEmpty: document.getElementById("homeEmpty"),
+
+        detailFlipBtn: document.getElementById("detailFlipBtn"),
+        detailBigInner: document.getElementById("detailBigInner"),
+        detailInfoPanel: document.getElementById("detailInfoPanel"),
+        detailPricePanel: document.getElementById("detailPricePanel"),
+        detailSource: document.getElementById("detailSource"),
+        detailNotes: document.getElementById("detailNotes"),
+        saveNotesBtn: document.getElementById("saveNotesBtn"),
+        editProductBtn: document.getElementById("editProductBtn"),
+        toggleTrackingBtn: document.getElementById("toggleTrackingBtn"),
+        deleteProductBtn: document.getElementById("deleteProductBtn"),
+        recordPriceBtn: document.getElementById("recordPriceBtn"),
+
+        step1: document.getElementById("step1"),
+        step2: document.getElementById("step2"),
+        step3: document.getElementById("step3"),
+        addStep1: document.getElementById("addStep1"),
+        addStep2: document.getElementById("addStep2"),
+        addStep3: document.getElementById("addStep3"),
+        useDemoBtn: document.getElementById("useDemoBtn"),
+        cameraBtn: document.getElementById("cameraBtn"),
+        albumBtn: document.getElementById("albumBtn"),
+        fileInput: document.getElementById("fileInput"),
+        uploadPreview: document.getElementById("uploadPreview"),
+        sampleGallery: document.getElementById("sampleGallery"),
+        recognizedList: document.getElementById("recognizedList"),
+        manualAddBtn: document.getElementById("manualAddBtn"),
+        saveRecognizedBtn: document.getElementById("saveRecognizedBtn"),
+
+        trackingList: document.getElementById("trackingList"),
+        trackingEmpty: document.getElementById("trackingEmpty"),
+        categoryList: document.getElementById("categoryList"),
+
+        accountBtn: document.getElementById("accountBtn"),
+        clearCacheBtn: document.getElementById("clearCacheBtn"),
+        aboutBtn: document.getElementById("aboutBtn"),
+
+        overlay: document.getElementById("overlay"),
+        modalTitle: document.getElementById("modalTitle"),
+        modalBody: document.getElementById("modalBody"),
+        modalActions: document.getElementById("modalActions"),
+        modalCloseBtn: document.getElementById("modalCloseBtn"),
+      };
+
+      function uid() {
+        if (crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+      }
+
+      function todayISO() {
+        const d = new Date();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return d.getFullYear() + "-" + mm + "-" + dd;
+      }
+
+      function parseISODate(dateStr) {
+        const t = Date.parse(dateStr);
+        return Number.isFinite(t) ? t : 0;
+      }
+
+      function formatMoney(num) {
+        if (!Number.isFinite(num)) return "-";
+        return "¥" + num;
+      }
+
+      function safeText(v) {
+        return (v ?? "").toString();
+      }
+
+      function setImgWithFallback(imgEl, src, fallbackSeed) {
+        imgEl.src = src;
+        imgEl.onerror = () => {
+          imgEl.onerror = null;
+          imgEl.src = placeholderDataUrl(fallbackSeed);
+        };
+      }
+
+      function placeholderDataUrl(seed) {
+        const s = seed || "Beauty";
+        const bg1 = "F5A9A9";
+        const bg2 = "FFB7B2";
+        const txt = encodeURIComponent(s.slice(0, 6));
+        const svg =
+          "<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'>" +
+          "<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>" +
+          "<stop offset='0' stop-color='#" +
+          bg1 +
+          "'/><stop offset='1' stop-color='#" +
+          bg2 +
+          "'/></linearGradient></defs>" +
+          "<rect width='600' height='600' rx='48' fill='url(#g)'/>" +
+          "<text x='50%' y='52%' dominant-baseline='middle' text-anchor='middle' font-size='56' fill='rgba(255,255,255,0.95)' font-family='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto'>" +
+          txt +
+          "</text></svg>";
+        return "data:image/svg+xml;charset=utf-8," + svg;
+      }
+
+      function loadProducts() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+          return [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveProducts(products) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+      }
+
+      function seedIfEmpty() {
+        const existing = loadProducts();
+        if (existing.length > 0) return;
+
+        const now = new Date().toISOString();
+        const seeded = [
+          {
+            id: uid(),
+            category: "粉底",
+            brand: "毛戈平",
+            productName: "水奶油",
+            shade: "#803",
+            imageUrl: SAMPLE_IMAGE_URLS.maogep,
+            notes: "",
+            source: "",
+            createdAt: now,
+            priceTracking: false,
+            priceHistory: [{ date: todayISO(), price: 289, note: "首条记录" }],
+          },
+          {
+            id: uid(),
+            category: "遮瑕",
+            brand: "花知晓",
+            productName: "提亮遮瑕液",
+            shade: "PH04",
+            imageUrl: SAMPLE_IMAGE_URLS.flower,
+            notes: "",
+            source: "",
+            createdAt: now,
+            priceTracking: false,
+            priceHistory: [{ date: todayISO(), price: 79, note: "" }],
+          },
+          {
+            id: uid(),
+            category: "腮红",
+            brand: "RC",
+            productName: "腮红丝子",
+            shade: "",
+            imageUrl: SAMPLE_IMAGE_URLS.blush,
+            notes: "",
+            source: "",
+            createdAt: now,
+            priceTracking: true,
+            priceHistory: [{ date: todayISO(), price: 65, note: "加入追踪" }],
+          },
+        ];
+
+        saveProducts(seeded);
+      }
+
+      function migrateSampleImages() {
+        const products = loadProducts();
+        let changed = false;
+
+        for (const p of products) {
+          const url = safeText(p.imageUrl);
+          const needs = !url || url.startsWith("data:image/svg+xml");
+          if (!needs) continue;
+
+          if (p.brand === "毛戈平" && p.productName === "水奶油") {
+            p.imageUrl = SAMPLE_IMAGE_URLS.maogep;
+            changed = true;
+          } else if (p.brand === "花知晓" && p.productName === "提亮遮瑕液") {
+            p.imageUrl = SAMPLE_IMAGE_URLS.flower;
+            changed = true;
+          } else if (p.brand === "RC" && p.productName === "腮红丝子") {
+            p.imageUrl = SAMPLE_IMAGE_URLS.blush;
+            changed = true;
+          }
+        }
+
+        if (changed) saveProducts(products);
+      }
+
+      function getLatestPrice(product) {
+        const list = Array.isArray(product.priceHistory) ? product.priceHistory : [];
+        if (list.length === 0) return null;
+        const sorted = [...list].sort((a, b) => parseISODate(b.date) - parseISODate(a.date));
+        const p = Number(sorted[0]?.price);
+        return Number.isFinite(p) ? p : null;
+      }
+
+      function getLowestPrice(product) {
+        const list = Array.isArray(product.priceHistory) ? product.priceHistory : [];
+        const nums = list.map((x) => Number(x.price)).filter((n) => Number.isFinite(n));
+        if (nums.length === 0) return null;
+        return Math.min(...nums);
+      }
+
+      function getLastUpdated(product) {
+        const list = Array.isArray(product.priceHistory) ? product.priceHistory : [];
+        if (list.length === 0) return "";
+        const sorted = [...list].sort((a, b) => parseISODate(b.date) - parseISODate(a.date));
+        return sorted[0]?.date || "";
+      }
+
+      function findProduct(products, id) {
+        return products.find((p) => p.id === id) || null;
+      }
+
+      function setTopbar({ title, canBack, showActions }) {
+        els.topbarTitle.textContent = title;
+        els.backBtn.hidden = !canBack;
+        els.topbarActions.style.visibility = showActions ? "visible" : "hidden";
+      }
+
+      function setActiveTab(tab) {
+        els.tabs.forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tab));
+      }
+
+      function showPage(page, { push = true, title = "", canBack = false, showActions = true, tab = "" } = {}) {
+        Object.entries(els.pages).forEach(([key, sec]) => sec.classList.toggle("is-active", key === page));
+        state.page = page;
+
+        if (push) {
+          state.navStack.push({ page: state.page, title, canBack, showActions, tab });
+        }
+
+        setTopbar({
+          title,
+          canBack,
+          showActions,
+        });
+
+        if (tab) setActiveTab(tab);
+      }
+
+      function resetSearchUI() {
+        els.searchbar.hidden = true;
+        if (els.searchInput.value !== state.searchQuery) els.searchInput.value = state.searchQuery;
+      }
+
+      function openOverlay({ title, bodyNodes, actions }) {
+        els.modalTitle.textContent = title;
+        els.modalBody.replaceChildren(...bodyNodes);
+        els.modalActions.replaceChildren(...actions);
+        els.modalActions.classList.toggle("one", actions.length === 1);
+        els.overlay.classList.add("is-open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeOverlay() {
+        els.overlay.classList.remove("is-open");
+        document.body.style.overflow = "";
+      }
+
+      function makeButton({ text, variant = "ghost", onClick }) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = text;
+        if (variant === "primary") btn.className = "primary-btn";
+        else if (variant === "danger") btn.className = "danger-btn";
+        else btn.className = "ghost-btn";
+        btn.addEventListener("click", onClick);
+        return btn;
+      }
+
+      function confirmDialog({ title, message, okText = "确定", danger = false }) {
+        return new Promise((resolve) => {
+          const msg = document.createElement("div");
+          msg.textContent = message;
+          msg.style.color = "rgba(34,34,34,0.75)";
+          msg.style.lineHeight = "1.5";
+
+          openOverlay({
+            title,
+            bodyNodes: [msg],
+            actions: [
+              makeButton({
+                text: "取消",
+                variant: "ghost",
+                onClick: () => {
+                  closeOverlay();
+                  resolve(false);
+                },
+              }),
+              makeButton({
+                text: okText,
+                variant: danger ? "danger" : "primary",
+                onClick: () => {
+                  closeOverlay();
+                  resolve(true);
+                },
+              }),
+            ],
+          });
+        });
+      }
+
+      function toast(message) {
+        const el = document.createElement("div");
+        el.textContent = message;
+        el.style.position = "fixed";
+        el.style.left = "50%";
+        el.style.bottom = "5.6rem";
+        el.style.transform = "translateX(-50%)";
+        el.style.background = "rgba(34,34,34,0.88)";
+        el.style.color = "#fff";
+        el.style.padding = "0.6rem 0.9rem";
+        el.style.borderRadius = "999px";
+        el.style.fontSize = "0.9rem";
+        el.style.zIndex = "80";
+        el.style.boxShadow = "0 12px 28px rgba(0,0,0,0.25)";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1600);
+      }
+
+      function renderHome() {
+        const products = loadProducts();
+
+        const q = state.searchQuery.trim().toLowerCase();
+        const filtered = products.filter((p) => {
+          const catOk = state.activeCategory === "全部" || p.category === state.activeCategory;
+          if (!catOk) return false;
+          if (!q) return true;
+          const hay =
+            (p.brand || "").toLowerCase() +
+            " " +
+            (p.productName || "").toLowerCase() +
+            " " +
+            (p.shade || "").toLowerCase();
+          return hay.includes(q);
+        });
+
+        els.categoryPill.textContent = state.activeCategory + " ▾";
+
+        els.productGrid.replaceChildren(
+          ...filtered.map((p) => {
+            const btn = document.createElement("button");
+            btn.className = "card";
+            btn.type = "button";
+
+            const shell = document.createElement("div");
+            shell.className = "card-shell";
+
+            const faceFront = document.createElement("div");
+            faceFront.className = "card-face";
+
+            const img = document.createElement("img");
+            img.className = "card-img";
+            img.alt = "产品图片";
+            img.loading = "lazy";
+            img.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
+
+            const brand = document.createElement("div");
+            brand.className = "brand";
+            brand.textContent = p.brand || "—";
+
+            const pname = document.createElement("div");
+            pname.className = "pname";
+            pname.textContent = p.productName || "未命名";
+
+            const shade = document.createElement("div");
+            shade.className = "shade";
+            shade.textContent = p.shade ? "色号：" + p.shade : p.category || "";
+
+            const price = document.createElement("div");
+            price.className = "price";
+
+            const latest = getLatestPrice(p);
+            const val = document.createElement("div");
+            val.className = "val";
+            val.textContent = latest == null ? "—" : formatMoney(latest);
+
+            const badge = document.createElement("div");
+            badge.className = "badge";
+            badge.textContent = p.priceTracking ? "追踪中" : p.category || "—";
+
+            price.append(val, badge);
+
+            faceFront.append(img, brand, pname, shade, price);
+
+            const faceBack = document.createElement("div");
+            faceBack.className = "card-face card-back";
+            const backTitle = document.createElement("div");
+            backTitle.style.fontWeight = "900";
+            backTitle.textContent = "点击查看详情";
+            const backMeta = document.createElement("div");
+            backMeta.className = "muted";
+            backMeta.style.fontSize = "0.9rem";
+            backMeta.style.lineHeight = "1.5";
+            backMeta.textContent =
+              "分类：" + (p.category || "—") + "  ·  低价：" + (getLowestPrice(p) == null ? "—" : formatMoney(getLowestPrice(p)));
+            faceBack.append(backTitle, backMeta);
+
+            shell.append(faceFront, faceBack);
+            btn.appendChild(shell);
+
+            btn.addEventListener("click", () => {
+              shell.classList.add("is-flipping");
+              setTimeout(() => {
+                shell.classList.remove("is-flipping");
+                openDetail(p.id);
+              }, 260);
+            });
+
+            return btn;
+          })
+        );
+
+        els.homeEmpty.hidden = filtered.length !== 0;
+      }
+
+      function renderTracking() {
+        const products = loadProducts().filter((p) => !!p.priceTracking);
+        els.trackingList.replaceChildren(
+          ...products.map((p) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "list-item";
+
+            const img = document.createElement("img");
+            img.className = "thumb";
+            img.alt = "缩略图";
+            img.loading = "lazy";
+            img.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
+
+            const main = document.createElement("div");
+            main.className = "li-main";
+            const title = document.createElement("div");
+            title.className = "li-title";
+            title.textContent = (p.productName || "未命名") + (p.shade ? " " + p.shade : "");
+            const sub = document.createElement("div");
+            sub.className = "li-sub";
+            sub.textContent = (p.brand || "—") + " · " + (p.category || "—");
+            main.append(title, sub);
+
+            const meta = document.createElement("div");
+            meta.className = "li-meta";
+            const latest = getLatestPrice(p);
+            const low = getLowestPrice(p);
+            const updated = getLastUpdated(p);
+            const m1 = document.createElement("div");
+            m1.className = "meta-strong";
+            m1.textContent = latest == null ? "—" : formatMoney(latest);
+            const m2 = document.createElement("div");
+            m2.className = "meta-weak";
+            m2.textContent = "低：" + (low == null ? "—" : formatMoney(low)) + (updated ? " · " + updated : "");
+            meta.append(m1, m2);
+
+            btn.append(img, main, meta);
+            btn.addEventListener("click", () => openDetail(p.id));
+            return btn;
+          })
+        );
+        els.trackingEmpty.hidden = products.length !== 0;
+      }
+
+      function renderCategories() {
+        const products = loadProducts();
+        const counts = new Map();
+        for (const p of products) counts.set(p.category || "其他", (counts.get(p.category || "其他") || 0) + 1);
+
+        els.categoryList.replaceChildren(
+          ...CATEGORIES.map((cat) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "list-item";
+            const main = document.createElement("div");
+            main.className = "li-main";
+            const title = document.createElement("div");
+            title.className = "li-title";
+            title.textContent = cat;
+            const sub = document.createElement("div");
+            sub.className = "li-sub";
+            const n = cat === "全部" ? products.length : counts.get(cat) || 0;
+            sub.textContent = "数量：" + n;
+            main.append(title, sub);
+
+            const meta = document.createElement("div");
+            meta.className = "li-meta";
+            meta.textContent = state.activeCategory === cat ? "✓" : "›";
+
+            btn.append(main, meta);
+            btn.addEventListener("click", () => {
+              state.activeCategory = cat;
+              state.searchQuery = "";
+              els.searchInput.value = "";
+              resetSearchUI();
+              navigateToTab("home");
+            });
+            return btn;
+          })
+        );
+      }
+
+      function renderDetail(productId) {
+        const products = loadProducts();
+        const p = findProduct(products, productId);
+        if (!p) {
+          toast("未找到该产品");
+          navigateBack();
+          return;
+        }
+
+        state.selectedProductId = p.id;
+
+        const latest = getLatestPrice(p);
+        const low = getLowestPrice(p);
+
+        els.detailFlipBtn.classList.remove("is-flipped");
+        const front = document.createElement("div");
+        front.className = "big-face front";
+        const img = document.createElement("img");
+        img.className = "big-img";
+        img.alt = "产品图片";
+        img.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
+        const meta = document.createElement("div");
+        meta.className = "big-meta";
+        const b = document.createElement("div");
+        b.className = "muted";
+        b.style.fontSize = "0.9rem";
+        b.textContent = p.brand || "—";
+        const name = document.createElement("div");
+        name.style.fontWeight = "900";
+        name.style.fontSize = "1.1rem";
+        name.textContent = p.productName || "未命名";
+        const sh = document.createElement("div");
+        sh.className = "muted";
+        sh.textContent = p.shade ? "色号：" + p.shade : "分类：" + (p.category || "—");
+        const pr = document.createElement("div");
+        pr.style.marginTop = "0.35rem";
+        pr.innerHTML =
+          "<span style='color:var(--muted)'>当前价格：</span><span style='font-weight:900;color:var(--green)'>" +
+          (latest == null ? "—" : formatMoney(latest)) +
+          "</span>";
+        meta.append(b, name, sh, pr);
+        front.append(img, meta);
+
+        const back = document.createElement("div");
+        back.className = "big-face back";
+        back.style.padding = "0.9rem";
+        const t = document.createElement("div");
+        t.style.fontWeight = "900";
+        t.textContent = "产品概览";
+        const d = document.createElement("div");
+        d.className = "muted";
+        d.style.marginTop = "0.35rem";
+        d.style.lineHeight = "1.6";
+        d.textContent =
+          "分类：" +
+          (p.category || "—") +
+          " · 低价：" +
+          (low == null ? "—" : formatMoney(low)) +
+          " · 更新时间：" +
+          (getLastUpdated(p) || "—");
+        const hint = document.createElement("div");
+        hint.className = "muted";
+        hint.style.marginTop = "0.8rem";
+        hint.style.fontSize = "0.9rem";
+        hint.textContent = "点击卡片翻转回正面";
+        back.append(t, d, hint);
+
+        els.detailBigInner.replaceChildren(front, back);
+
+        const infoWrap = document.createElement("div");
+        infoWrap.className = "panel";
+        const infoTitle = document.createElement("h3");
+        infoTitle.className = "section-title";
+        infoTitle.textContent = "结构化信息";
+        const kv = document.createElement("div");
+        kv.className = "kv";
+        kv.append(
+          ...kvRow("分类", p.category || "—"),
+          ...kvRow("品牌", p.brand || "—"),
+          ...kvRow("产品", p.productName || "—"),
+          ...kvRow("色号", p.shade || "—"),
+          ...kvRow("添加", (p.createdAt || "").slice(0, 10) || "—")
+        );
+        infoWrap.append(infoTitle, kv);
+        els.detailInfoPanel.replaceChildren(infoWrap);
+
+        els.detailSource.value = safeText(p.source);
+        els.detailNotes.value = safeText(p.notes);
+
+        els.toggleTrackingBtn.textContent = p.priceTracking ? "取消追踪" : "加入追踪";
+
+        const history = Array.isArray(p.priceHistory) ? [...p.priceHistory] : [];
+        history.sort((a, b) => parseISODate(b.date) - parseISODate(a.date));
+
+        const pricePanel = document.createElement("div");
+        pricePanel.className = "panel";
+        const h = document.createElement("h3");
+        h.className = "section-title";
+        h.textContent = "价格历史";
+        const head = document.createElement("div");
+        head.className = "row justify";
+        head.style.marginBottom = "0.5rem";
+        const s1 = document.createElement("div");
+        s1.className = "muted";
+        s1.textContent =
+          "最新：" +
+          (latest == null ? "—" : formatMoney(latest)) +
+          " · 最低：" +
+          (low == null ? "—" : formatMoney(low));
+        const s2 = document.createElement("div");
+        s2.className = "muted";
+        s2.textContent = history.length ? "共 " + history.length + " 条" : "暂无记录";
+        head.append(s1, s2);
+
+        const list = document.createElement("div");
+        list.className = "list";
+        if (history.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.style.textAlign = "center";
+          empty.style.padding = "0.75rem 0";
+          empty.textContent = "还没有价格记录，点击“记录价格”添加。";
+          list.appendChild(empty);
+        } else {
+          for (const item of history) {
+            const row = document.createElement("div");
+            row.className = "list-item";
+            row.style.display = "grid";
+            row.style.gridTemplateColumns = "6.5rem 1fr";
+            row.style.alignItems = "start";
+            const left = document.createElement("div");
+            left.innerHTML =
+              "<div style='font-weight:900;color:var(--green)'>" +
+              formatMoney(Number(item.price)) +
+              "</div><div class='muted' style='margin-top:0.15rem;font-size:0.85rem'>" +
+              safeText(item.date) +
+              "</div>";
+            const right = document.createElement("div");
+            right.className = "muted";
+            right.style.lineHeight = "1.5";
+            right.textContent = safeText(item.note) || "—";
+            row.append(left, right);
+            list.appendChild(row);
+          }
+        }
+
+        pricePanel.append(h, head, list);
+        els.detailPricePanel.replaceChildren(pricePanel);
+      }
+
+      function kvRow(k, v) {
+        const kk = document.createElement("div");
+        kk.className = "k";
+        kk.textContent = k;
+        const vv = document.createElement("div");
+        vv.textContent = v;
+        return [kk, vv];
+      }
+
+      function openDetail(id) {
+        resetSearchUI();
+        showPage("detail", { push: false, title: "卡片详情", canBack: true, showActions: false, tab: "" });
+        state.navStack.push({ page: "detail", title: "卡片详情", canBack: true, showActions: false, tab: "" });
+        setTopbar({ title: "卡片详情", canBack: true, showActions: false });
+        renderDetail(id);
+      }
+
+      function navigateBack() {
+        resetSearchUI();
+        if (state.page === "detail") {
+          state.navStack.pop();
+          const lastTab = state.navStack[state.navStack.length - 1]?.tab || "home";
+          navigateToTab(lastTab);
+          return;
+        }
+
+        if (state.navStack.length <= 1) {
+          navigateToTab("home");
+          return;
+        }
+        state.navStack.pop();
+        const last = state.navStack[state.navStack.length - 1];
+        navigateToTab(last.tab || "home");
+      }
+
+      function navigateToTab(tab) {
+        resetSearchUI();
+
+        if (tab === "home") {
+          showPage("home", { push: false, title: "我的种草清单", canBack: false, showActions: true, tab: "home" });
+          setTopbar({ title: "我的种草清单", canBack: false, showActions: true });
+          setActiveTab("home");
+          renderHome();
+          return;
+        }
+
+        if (tab === "tracking") {
+          showPage("tracking", { push: false, title: "价格追踪", canBack: false, showActions: false, tab: "tracking" });
+          setTopbar({ title: "价格追踪", canBack: false, showActions: false });
+          setActiveTab("tracking");
+          renderTracking();
+          return;
+        }
+
+        if (tab === "categories") {
+          showPage("categories", { push: false, title: "分类筛选", canBack: false, showActions: false, tab: "categories" });
+          setTopbar({ title: "分类筛选", canBack: false, showActions: false });
+          setActiveTab("categories");
+          renderCategories();
+          return;
+        }
+
+        if (tab === "me") {
+          showPage("me", { push: false, title: "我的", canBack: false, showActions: false, tab: "me" });
+          setTopbar({ title: "我的", canBack: false, showActions: false });
+          setActiveTab("me");
+          return;
+        }
+
+        if (tab === "add") {
+          showPage("add", { push: false, title: "添加", canBack: false, showActions: false, tab: "add" });
+          setTopbar({ title: "添加", canBack: false, showActions: false });
+          setActiveTab("add");
+          startAddFlow();
+          return;
+        }
+      }
+
+      function updateAddStepUI() {
+        const s = state.addFlow.step;
+        els.step1.classList.toggle("is-active", s === 1);
+        els.step2.classList.toggle("is-active", s === 2);
+        els.step3.classList.toggle("is-active", s === 3);
+
+        els.addStep1.hidden = s !== 1;
+        els.addStep2.hidden = s !== 2;
+        els.addStep3.hidden = s !== 3;
+      }
+
+      function startAddFlow() {
+        state.addFlow.step = 1;
+        state.addFlow.imageDataUrl = "";
+        state.addFlow.items = [];
+        els.uploadPreview.style.display = "none";
+        els.fileInput.value = "";
+        updateAddStepUI();
+      }
+
+      function simulateRecognize() {
+        state.addFlow.items = [
+          { tempId: uid(), category: "粉底", brand: "毛戈平", productName: "水奶油", shade: "#803", imageUrl: SAMPLE_IMAGE_URLS.maogep },
+          { tempId: uid(), category: "遮瑕", brand: "花知晓", productName: "提亮遮瑕液", shade: "PH04", imageUrl: SAMPLE_IMAGE_URLS.flower },
+          { tempId: uid(), category: "腮红", brand: "RC", productName: "腮红丝子", shade: "", imageUrl: SAMPLE_IMAGE_URLS.blush },
+        ];
+      }
+
+      function renderSampleGallery() {
+        const items = [
+          { label: "花知晓", src: SAMPLE_IMAGE_URLS.flower },
+          { label: "毛戈平", src: SAMPLE_IMAGE_URLS.maogep },
+          { label: "腮红", src: SAMPLE_IMAGE_URLS.blush },
+        ];
+
+        els.sampleGallery.replaceChildren(
+          ...items.map((it) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "sample-tile";
+
+            const img = document.createElement("img");
+            img.className = "sample-img";
+            img.alt = it.label;
+            img.loading = "lazy";
+            setImgWithFallback(img, it.src, it.label);
+
+            const cap = document.createElement("div");
+            cap.className = "sample-cap";
+            cap.textContent = it.label + "（点选作为测试样例）";
+
+            btn.append(img, cap);
+            btn.addEventListener("click", () => {
+              state.addFlow.imageDataUrl = it.src;
+              setImgWithFallback(els.uploadPreview, it.src, it.label);
+              els.uploadPreview.style.display = "block";
+              goRecognize();
+            });
+            return btn;
+          })
+        );
+      }
+
+      function renderRecognizedList() {
+        const items = state.addFlow.items;
+        els.recognizedList.replaceChildren(
+          ...items.map((it) => {
+            const row = document.createElement("div");
+            row.className = "list-item";
+            row.style.display = "grid";
+            row.style.gridTemplateColumns = "1fr 3.75rem";
+            row.style.alignItems = "center";
+
+            const main = document.createElement("div");
+            const t = document.createElement("div");
+            t.style.fontWeight = "900";
+            t.textContent = (it.category || "—") + " · " + (it.brand || "—");
+            const s = document.createElement("div");
+            s.className = "muted";
+            s.style.marginTop = "0.2rem";
+            s.style.fontSize = "0.85rem";
+            s.textContent = (it.productName || "未命名") + (it.shade ? " " + it.shade : "");
+            main.append(t, s);
+
+            const ops = document.createElement("div");
+            ops.style.display = "flex";
+            ops.style.gap = "0.35rem";
+            ops.style.justifyContent = "flex-end";
+
+            const edit = document.createElement("button");
+            edit.type = "button";
+            edit.className = "pill-btn";
+            edit.textContent = "编辑";
+            edit.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openEditRecognized(it.tempId);
+            });
+
+            const del = document.createElement("button");
+            del.type = "button";
+            del.className = "pill-btn";
+            del.style.borderColor = "rgba(227,77,77,0.35)";
+            del.style.color = "var(--danger)";
+            del.textContent = "删";
+            del.addEventListener("click", async (e) => {
+              e.stopPropagation();
+              const ok = await confirmDialog({ title: "删除该行？", message: "删除后不会保存到清单。", okText: "删除", danger: true });
+              if (!ok) return;
+              state.addFlow.items = state.addFlow.items.filter((x) => x.tempId !== it.tempId);
+              renderRecognizedList();
+            });
+
+            ops.append(edit, del);
+            row.append(main, ops);
+            return row;
+          })
+        );
+      }
+
+      function openEditRecognized(tempId) {
+        const it = state.addFlow.items.find((x) => x.tempId === tempId);
+        if (!it) return;
+
+        const cat = document.createElement("select");
+        for (const c of CATEGORIES.filter((x) => x !== "全部")) {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          if (c === it.category) opt.selected = true;
+          cat.appendChild(opt);
+        }
+
+        const brand = document.createElement("input");
+        brand.placeholder = "品牌";
+        brand.value = safeText(it.brand);
+
+        const name = document.createElement("input");
+        name.placeholder = "产品名";
+        name.value = safeText(it.productName);
+
+        const shade = document.createElement("input");
+        shade.placeholder = "色号（可选）";
+        shade.value = safeText(it.shade);
+
+        const body = [
+          fieldWrap("分类", cat),
+          fieldWrap("品牌", brand),
+          fieldWrap("产品名", name),
+          fieldWrap("色号", shade),
+        ];
+
+        openOverlay({
+          title: "编辑识别结果",
+          bodyNodes: body,
+          actions: [
+            makeButton({ text: "取消", variant: "ghost", onClick: closeOverlay }),
+            makeButton({
+              text: "保存",
+              variant: "primary",
+              onClick: () => {
+                it.category = cat.value;
+                it.brand = brand.value.trim();
+                it.productName = name.value.trim();
+                it.shade = shade.value.trim();
+                closeOverlay();
+                renderRecognizedList();
+              },
+            }),
+          ],
+        });
+      }
+
+      function fieldWrap(label, control) {
+        const w = document.createElement("div");
+        w.className = "field";
+        const l = document.createElement("label");
+        l.textContent = label;
+        w.append(l, control);
+        return w;
+      }
+
+      function openEditProduct(productId) {
+        const products = loadProducts();
+        const p = findProduct(products, productId);
+        if (!p) return;
+
+        const cat = document.createElement("select");
+        for (const c of CATEGORIES.filter((x) => x !== "全部")) {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          if (c === p.category) opt.selected = true;
+          cat.appendChild(opt);
+        }
+
+        const brand = document.createElement("input");
+        brand.placeholder = "品牌";
+        brand.value = safeText(p.brand);
+
+        const name = document.createElement("input");
+        name.placeholder = "产品名";
+        name.value = safeText(p.productName);
+
+        const shade = document.createElement("input");
+        shade.placeholder = "色号（可选）";
+        shade.value = safeText(p.shade);
+
+        const imgWrap = document.createElement("div");
+        imgWrap.className = "field";
+        const imgLabel = document.createElement("label");
+        imgLabel.textContent = "产品图片（可选）";
+        const imgPrev = document.createElement("img");
+        imgPrev.className = "card-img";
+        imgPrev.alt = "预览";
+        imgPrev.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
+        imgPrev.style.aspectRatio = "16 / 10";
+        imgPrev.style.borderRadius = "1rem";
+        const imgBtn = document.createElement("button");
+        imgBtn.type = "button";
+        imgBtn.className = "pill-btn";
+        imgBtn.textContent = "选择图片";
+        const imgInput = document.createElement("input");
+        imgInput.type = "file";
+        imgInput.accept = "image/*";
+        imgInput.hidden = true;
+        imgBtn.addEventListener("click", () => imgInput.click());
+        imgInput.addEventListener("change", async () => {
+          const f = imgInput.files?.[0];
+          if (!f) return;
+          const dataUrl = await fileToDataUrl(f);
+          imgPrev.src = dataUrl;
+          imgPrev.dataset.value = dataUrl;
+        });
+        imgWrap.append(imgLabel, imgPrev, imgBtn, imgInput);
+
+        openOverlay({
+          title: "编辑产品信息",
+          bodyNodes: [fieldWrap("分类", cat), fieldWrap("品牌", brand), fieldWrap("产品名", name), fieldWrap("色号", shade), imgWrap],
+          actions: [
+            makeButton({ text: "取消", variant: "ghost", onClick: closeOverlay }),
+            makeButton({
+              text: "保存",
+              variant: "primary",
+              onClick: () => {
+                p.category = cat.value;
+                p.brand = brand.value.trim();
+                p.productName = name.value.trim();
+                p.shade = shade.value.trim();
+                const nextImg = imgPrev.dataset.value;
+                if (nextImg) p.imageUrl = nextImg;
+                saveProducts(products);
+                closeOverlay();
+                renderDetail(p.id);
+                renderHome();
+                renderTracking();
+              },
+            }),
+          ],
+        });
+      }
+
+      function openRecordPrice(productId) {
+        const products = loadProducts();
+        const p = findProduct(products, productId);
+        if (!p) return;
+
+        const date = document.createElement("input");
+        date.type = "date";
+        date.value = todayISO();
+
+        const price = document.createElement("input");
+        price.type = "number";
+        price.inputMode = "decimal";
+        price.placeholder = "价格";
+
+        const note = document.createElement("input");
+        note.placeholder = "备注（可选）";
+
+        openOverlay({
+          title: "记录价格",
+          bodyNodes: [fieldWrap("日期", date), fieldWrap("价格", price), fieldWrap("备注", note)],
+          actions: [
+            makeButton({ text: "取消", variant: "ghost", onClick: closeOverlay }),
+            makeButton({
+              text: "保存",
+              variant: "primary",
+              onClick: () => {
+                const n = Number(price.value);
+                if (!Number.isFinite(n) || n <= 0) {
+                  toast("请输入有效价格");
+                  return;
+                }
+                const item = { date: date.value || todayISO(), price: n, note: note.value.trim() };
+                if (!Array.isArray(p.priceHistory)) p.priceHistory = [];
+                p.priceHistory.push(item);
+                saveProducts(products);
+                closeOverlay();
+                renderDetail(p.id);
+                renderHome();
+                renderTracking();
+                toast("已记录");
+              },
+            }),
+          ],
+        });
+      }
+
+      function openMenu() {
+        const products = loadProducts();
+        const msg = document.createElement("div");
+        msg.className = "muted";
+        msg.style.lineHeight = "1.6";
+        msg.textContent = "当前清单：" + products.length + " 个产品";
+
+        openOverlay({
+          title: "菜单",
+          bodyNodes: [msg],
+          actions: [
+            makeButton({ text: "关闭", variant: "ghost", onClick: closeOverlay }),
+            makeButton({
+              text: "清空数据",
+              variant: "danger",
+              onClick: async () => {
+                const ok = await confirmDialog({ title: "清空数据？", message: "将删除所有产品与价格记录。", okText: "清空", danger: true });
+                if (!ok) return;
+                localStorage.removeItem(STORAGE_KEY);
+                closeOverlay();
+                seedIfEmpty();
+                renderHome();
+                toast("已清空并重置示例数据");
+              },
+            }),
+          ],
+        });
+      }
+
+      async function fileToDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(reader.error || new Error("read error"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function attachEvents() {
+        els.backBtn.addEventListener("click", navigateBack);
+
+        els.searchBtn.addEventListener("click", () => {
+          els.searchbar.hidden = false;
+          els.searchInput.value = state.searchQuery;
+          els.searchInput.focus();
+        });
+
+        els.searchCancelBtn.addEventListener("click", () => {
+          state.searchQuery = "";
+          els.searchInput.value = "";
+          resetSearchUI();
+          renderHome();
+        });
+
+        els.searchInput.addEventListener("input", () => {
+          state.searchQuery = els.searchInput.value;
+          renderHome();
+        });
+
+        els.menuBtn.addEventListener("click", openMenu);
+
+        els.categoryPill.addEventListener("click", () => navigateToTab("categories"));
+        els.aiAddBtn.addEventListener("click", () => navigateToTab("add"));
+
+        els.tabs.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const tab = btn.dataset.tab;
+            navigateToTab(tab);
+          });
+        });
+
+        els.detailFlipBtn.addEventListener("click", () => {
+          els.detailFlipBtn.classList.toggle("is-flipped");
+        });
+
+        els.saveNotesBtn.addEventListener("click", () => {
+          const products = loadProducts();
+          const p = findProduct(products, state.selectedProductId);
+          if (!p) return;
+          p.source = els.detailSource.value.trim();
+          p.notes = els.detailNotes.value.trim();
+          saveProducts(products);
+          toast("已保存");
+          renderDetail(p.id);
+        });
+
+        els.editProductBtn.addEventListener("click", () => openEditProduct(state.selectedProductId));
+
+        els.toggleTrackingBtn.addEventListener("click", () => {
+          const products = loadProducts();
+          const p = findProduct(products, state.selectedProductId);
+          if (!p) return;
+          p.priceTracking = !p.priceTracking;
+          saveProducts(products);
+          renderDetail(p.id);
+          renderTracking();
+          toast(p.priceTracking ? "已加入追踪" : "已取消追踪");
+        });
+
+        els.deleteProductBtn.addEventListener("click", async () => {
+          const products = loadProducts();
+          const p = findProduct(products, state.selectedProductId);
+          if (!p) return;
+          const ok = await confirmDialog({ title: "删除产品？", message: "删除后无法恢复。", okText: "删除", danger: true });
+          if (!ok) return;
+          const next = products.filter((x) => x.id !== p.id);
+          saveProducts(next);
+          toast("已删除");
+          navigateBack();
+          renderHome();
+          renderTracking();
+          renderCategories();
+        });
+
+        els.recordPriceBtn.addEventListener("click", () => openRecordPrice(state.selectedProductId));
+
+        els.modalCloseBtn.addEventListener("click", closeOverlay);
+        els.overlay.addEventListener("click", (e) => {
+          if (e.target === els.overlay) closeOverlay();
+        });
+
+        els.useDemoBtn.addEventListener("click", () => {
+          state.addFlow.imageDataUrl = "";
+          els.uploadPreview.style.display = "none";
+          goRecognize();
+        });
+
+        els.cameraBtn.addEventListener("click", () => {
+          els.fileInput.setAttribute("capture", "environment");
+          els.fileInput.click();
+        });
+
+        els.albumBtn.addEventListener("click", () => {
+          els.fileInput.removeAttribute("capture");
+          els.fileInput.click();
+        });
+
+        els.fileInput.addEventListener("change", async () => {
+          const f = els.fileInput.files?.[0];
+          if (!f) return;
+          try {
+            const dataUrl = await fileToDataUrl(f);
+            state.addFlow.imageDataUrl = dataUrl;
+            els.uploadPreview.src = dataUrl;
+            els.uploadPreview.style.display = "block";
+            goRecognize();
+          } catch {
+            toast("读取图片失败");
+          }
+        });
+
+        els.manualAddBtn.addEventListener("click", () => {
+          state.addFlow.items.unshift({ tempId: uid(), category: "其他", brand: "", productName: "", shade: "", imageUrl: state.addFlow.imageDataUrl });
+          renderRecognizedList();
+          openEditRecognized(state.addFlow.items[0].tempId);
+        });
+
+        els.saveRecognizedBtn.addEventListener("click", () => {
+          const cleaned = state.addFlow.items
+            .map((it) => ({
+              category: it.category || "其他",
+              brand: (it.brand || "").trim(),
+              productName: (it.productName || "").trim(),
+              shade: (it.shade || "").trim(),
+              imageUrl: it.imageUrl || placeholderDataUrl(it.brand || it.productName || "Beauty"),
+            }))
+            .filter((x) => x.brand || x.productName);
+
+          if (cleaned.length === 0) {
+            toast("请至少填写一条产品信息");
+            return;
+          }
+
+          const products = loadProducts();
+          const now = new Date().toISOString();
+          for (const it of cleaned) {
+            products.unshift({
+              id: uid(),
+              category: it.category,
+              brand: it.brand,
+              productName: it.productName,
+              shade: it.shade,
+              imageUrl: it.imageUrl,
+              notes: "",
+              source: "",
+              createdAt: now,
+              priceTracking: false,
+              priceHistory: [],
+            });
+          }
+
+          saveProducts(products);
+          toast("已保存到清单");
+          state.activeCategory = "全部";
+          state.searchQuery = "";
+          els.searchInput.value = "";
+          navigateToTab("home");
+          renderHome();
+        });
+
+        els.clearCacheBtn.addEventListener("click", async () => {
+          const ok = await confirmDialog({ title: "清除缓存？", message: "将清空本地产品与价格记录。", okText: "清除", danger: true });
+          if (!ok) return;
+          localStorage.removeItem(STORAGE_KEY);
+          seedIfEmpty();
+          toast("已清除并重置示例数据");
+          renderHome();
+          renderTracking();
+          renderCategories();
+        });
+
+        els.aboutBtn.addEventListener("click", () => {
+          const msg = document.createElement("div");
+          msg.style.lineHeight = "1.6";
+          msg.innerHTML =
+            "<div style='font-weight:900;margin-bottom:0.25rem'>美妆种草清单助手</div>" +
+            "<div class='muted'>单文件H5演示：上传截图（模拟识别）→ 生成清单 → 记录价格 → 追踪历史。</div>";
+          openOverlay({ title: "关于", bodyNodes: [msg], actions: [makeButton({ text: "知道了", variant: "primary", onClick: closeOverlay })] });
+        });
+
+        els.accountBtn.addEventListener("click", () => {
+          const msg = document.createElement("div");
+          msg.className = "muted";
+          msg.style.lineHeight = "1.6";
+          msg.textContent = "此演示版本不包含登录功能，数据保存在本地浏览器。";
+          openOverlay({ title: "账号管理", bodyNodes: [msg], actions: [makeButton({ text: "关闭", variant: "primary", onClick: closeOverlay })] });
+        });
+      }
+
+      function goRecognize() {
+        state.addFlow.step = 2;
+        updateAddStepUI();
+        setTimeout(() => {
+          simulateRecognize();
+          state.addFlow.step = 3;
+          updateAddStepUI();
+          renderRecognizedList();
+        }, 900);
+      }
+
+      function boot() {
+        seedIfEmpty();
+        migrateSampleImages();
+        attachEvents();
+        renderSampleGallery();
+        state.navStack = [{ page: "home", title: "我的种草清单", canBack: false, showActions: true, tab: "home" }];
+        navigateToTab("home");
+      }
+
+      boot();
+    </script>
+  </body>
+</html>
+
