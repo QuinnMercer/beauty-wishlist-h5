@@ -32,8 +32,3 @@
 等待 Pages 构建完成后访问：
 
 `https://QuinnMercer.github.io/beauty-wishlist-h5/`
-
-## 常见问题
-
-- **访问 404**：Pages 开启后需要等待一会儿；也检查 `Branch` 是否选了 `main / (root)`。
-- **页面没更新**：浏览器强制刷新（Ctrl+F5）或等 CDN 缓存；也确认你上传的是最新的 `index.html`。
