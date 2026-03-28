@@ -216,39 +216,88 @@
 
       .card-shell {
         background: var(--card);
-        border-radius: 1rem;
+        border-radius: 0.75rem;
         box-shadow: var(--shadow);
         overflow: hidden;
-        transform-style: preserve-3d;
-        transition: transform 380ms ease;
         position: relative;
-        min-height: 11.25rem;
+        aspect-ratio: 170 / 220;
       }
-
-      .card-shell.is-flipping {
-        transform: rotateY(180deg);
-      }
-
-      .card-face {
-        padding: 0.75rem;
-        backface-visibility: hidden;
+      
+      .card-bg {
         position: absolute;
         inset: 0;
+        background: rgba(0, 0, 0, 0.04);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .card-avatar {
+        position: absolute;
+        left: 50%;
+        top: 44%;
+        width: 5rem;
+        height: 5rem;
+        transform: translate(-50%, -50%);
+        border-radius: 999px;
+        display: block;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-overlay {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 36%;
+        padding: 0.6rem 0.6rem 0.65rem;
+        background: rgba(255, 255, 255, 0.85);
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        justify-content: flex-end;
+        gap: 0.2rem;
       }
 
-      .card-back {
-        transform: rotateY(180deg);
+      .card-overlay .b {
+        font-size: 0.8rem;
+        color: rgba(34, 34, 34, 0.62);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
-      .card-img {
-        width: 100%;
-        border-radius: 0.75rem;
-        aspect-ratio: 1 / 1;
+      .card-overlay .n {
+        font-weight: 900;
+        line-height: 1.15;
+        color: rgba(34, 34, 34, 0.92);
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      .card-overlay .s {
+        font-size: 0.82rem;
+        color: rgba(34, 34, 34, 0.62);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .card-overlay .p {
+        margin-top: 0.1rem;
+        font-weight: 900;
+        color: var(--green);
+        font-size: 0.92rem;
+      }
+
+      .thumb {
+        width: 3.125rem;
+        height: 3.125rem;
+        border-radius: 999px;
         object-fit: cover;
         background: rgba(0, 0, 0, 0.04);
+        flex: 0 0 auto;
       }
 
       .brand {
@@ -379,15 +428,6 @@
 
       .list-item:active {
         transform: translateY(1px);
-      }
-
-      .thumb {
-        width: 3.1rem;
-        height: 3.1rem;
-        border-radius: 0.9rem;
-        object-fit: cover;
-        background: rgba(0, 0, 0, 0.04);
-        flex: 0 0 auto;
       }
 
       .li-main {
@@ -673,57 +713,51 @@
         }
       }
 
-      .big-card {
-        width: 100%;
-        height: 14.75rem;
-        border-radius: 1.25rem;
-        background: transparent;
-        border: 0;
-        padding: 0;
-        perspective: 1100px;
-      }
-
-      .big-inner {
-        width: 100%;
-        height: 100%;
-        border-radius: 1.25rem;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: transform 520ms ease;
-      }
-
-      .big-card.is-flipped .big-inner {
-        transform: rotateY(180deg);
-      }
-
-      .big-face {
-        position: absolute;
-        inset: 0;
-        backface-visibility: hidden;
-        border-radius: 1.25rem;
-        background: var(--card);
-        box-shadow: var(--shadow);
-        overflow: hidden;
+      .detail-hero {
         display: flex;
-        flex-direction: column;
+        gap: 0.85rem;
+        align-items: center;
       }
 
-      .big-face.back {
-        transform: rotateY(180deg);
-      }
-
-      .big-img {
-        width: 100%;
-        height: 9.25rem;
+      .detail-avatar {
+        width: 6.25rem;
+        height: 6.25rem;
+        border-radius: 999px;
         object-fit: cover;
-        background: rgba(0, 0, 0, 0.05);
+        flex: 0 0 auto;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
       }
 
-      .big-meta {
-        padding: 0.85rem 0.9rem 0.9rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
+      .detail-hero-meta {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .detail-hero-meta .b {
+        color: var(--muted);
+        font-size: 0.9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .detail-hero-meta .n {
+        margin-top: 0.25rem;
+        font-weight: 900;
+        font-size: 1.15rem;
+        line-height: 1.15;
+      }
+
+      .detail-hero-meta .s {
+        margin-top: 0.25rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .detail-hero-meta .p {
+        margin-top: 0.35rem;
+        font-weight: 900;
+        color: var(--green);
       }
 
       .muted {
@@ -760,9 +794,7 @@
         </section>
 
         <section class="page" id="page-detail" aria-label="卡片详情">
-          <button class="big-card" id="detailFlipBtn" aria-label="翻转卡片">
-            <div class="big-inner" id="detailBigInner"></div>
-          </button>
+          <div class="panel" id="detailHero"></div>
 
           <div style="height: 0.75rem"></div>
 
@@ -789,14 +821,14 @@
 
           <div class="panel" id="detailPricePanel"></div>
 
+          <div style="height: 0.75rem"></div>
+          <button class="primary-btn" id="recordPriceBtn">记录价格</button>
+
           <div class="actionbar">
             <button class="ghost-btn" id="editProductBtn">编辑信息</button>
             <button class="ghost-btn" id="toggleTrackingBtn">加入追踪</button>
             <button class="danger-btn" id="deleteProductBtn">删除</button>
           </div>
-
-          <div style="height: 0.75rem"></div>
-          <button class="primary-btn" id="recordPriceBtn">记录价格</button>
         </section>
 
         <section class="page" id="page-add" aria-label="添加流程">
@@ -844,6 +876,14 @@
           <div id="addStep3" hidden>
             <div class="panel">
               <h3 class="section-title">识别结果确认</h3>
+              <div id="recognizedImageWrap" hidden>
+                <img
+                  id="recognizedImagePreview"
+                  class="card-img"
+                  alt="已上传图片"
+                  style="aspect-ratio: 16 / 10; border-radius: 1rem; margin-bottom: 0.65rem"
+                />
+              </div>
               <div class="list" id="recognizedList"></div>
               <div style="height: 0.75rem"></div>
               <button class="ghost-btn" id="manualAddBtn">➕ 手动添加产品</button>
@@ -975,11 +1015,32 @@
       ];
 
       const STORAGE_KEY = "beauty_wishlist_products_v1";
-      const SAMPLE_IMAGE_URLS = {
-        flower: "./花知晓提亮液.jpg",
-        maogep: "./毛戈平粉底.jpg",
-        blush: "./腮红丝字.jpg",
-      };
+      const RECOGNITION_PRESET = [
+        { category: "护肤", brand: "ysl", productName: "调皮水", shade: "", originalText: "水：ysl调皮水（我会过敏）" },
+        { category: "妆前", brand: "毛戈平", productName: "黑霜", shade: "", originalText: "妆前：毛戈平黑霜" },
+        { category: "美瞳", brand: "Clairecolor", productName: "拒绝内耗", shade: "", originalText: "美瞳：Clairecolor拒绝内耗" },
+        { category: "遮瑕", brand: "花知晓", productName: "提亮遮瑕液", shade: "PH04", originalText: "遮瑕：花知晓提亮遮瑕液#PH04" },
+        { category: "粉底", brand: "毛戈平", productName: "水奶油", shade: "#803", originalText: "粉底：毛戈平水奶油#803" },
+        { category: "定妆", brand: "RCMA", productName: "定妆喷雾", shade: "", originalText: "定妆喷雾：RCMA" },
+        { category: "腮红", brand: "RC", productName: "丝子", shade: "", originalText: "腮红：RC#丝子#乐葵" },
+        { category: "腮红", brand: "RC", productName: "乐葵", shade: "", originalText: "腮红：RC#丝子#乐葵" },
+        { category: "工具", brand: "ooo", productName: "双头修容笔", shade: "", originalText: "修容笔：ooo双头修容笔" },
+        { category: "工具", brand: "ooo", productName: "双头提亮液", shade: "", originalText: "提亮液：ooo双头提亮液" },
+        { category: "定妆", brand: "巴贝拉", productName: "大粉饼", shade: "", originalText: "粉饼：巴贝拉大粉饼" },
+        { category: "修容", brand: "橘朵", productName: "", shade: "#02", originalText: "修容：橘朵#02" },
+        { category: "唇部护理", brand: "cibio", productName: "唇膜", shade: "", originalText: "唇膜：cibio" },
+        { category: "眉笔", brand: "Akk", productName: "", shade: "棕色", originalText: "眉笔：Akk#棕色" },
+        { category: "染眉膏", brand: "花洛莉亚", productName: "", shade: "你好美眉", originalText: "染眉膏：花洛莉亚#你好美眉" },
+        { category: "眼影", brand: "RC", productName: "", shade: "霞隐", originalText: "眼影：RC#霞隐" },
+        { category: "工具", brand: "tainjo", productName: "双眼皮贴", shade: "", originalText: "双眼皮贴：tainjo" },
+        { category: "眼线", brand: "花知晓", productName: "草莓洛可可", shade: "#03", originalText: "眼线：花知晓草莓洛可可#03" },
+        { category: "眼线", brand: "花知晓", productName: "草莓洛可可", shade: "01", originalText: "眼头提亮：花知晓草莓洛可可01" },
+        { category: "睫毛膏", brand: "花知晓", productName: "巧克力商店睫毛膏", shade: "", originalText: "睫毛膏：花知晓巧克力商店睫毛膏" },
+        { category: "遮瑕", brand: "彩棠", productName: "遮唇色遮瑕盘", shade: "01", originalText: "遮唇色遮瑕盘：彩棠01" },
+        { category: "工具", brand: "000", productName: "双头唇线笔", shade: "#704", originalText: "唇线笔：000双头唇线笔#704" },
+        { category: "口红", brand: "RC", productName: "丝子叠涂", shade: "乐葵", originalText: "口红：RC#丝子叠涂#乐葵" },
+        { category: "高光", brand: "pl", productName: "综合盘", shade: "", originalText: "湿漉漉高光：pl综合盘" },
+      ];
 
       const state = {
         page: "home",
@@ -1020,8 +1081,7 @@
         productGrid: document.getElementById("productGrid"),
         homeEmpty: document.getElementById("homeEmpty"),
 
-        detailFlipBtn: document.getElementById("detailFlipBtn"),
-        detailBigInner: document.getElementById("detailBigInner"),
+        detailHero: document.getElementById("detailHero"),
         detailInfoPanel: document.getElementById("detailInfoPanel"),
         detailPricePanel: document.getElementById("detailPricePanel"),
         detailSource: document.getElementById("detailSource"),
@@ -1044,6 +1104,8 @@
         fileInput: document.getElementById("fileInput"),
         uploadPreview: document.getElementById("uploadPreview"),
         sampleGallery: document.getElementById("sampleGallery"),
+        recognizedImageWrap: document.getElementById("recognizedImageWrap"),
+        recognizedImagePreview: document.getElementById("recognizedImagePreview"),
         recognizedList: document.getElementById("recognizedList"),
         manualAddBtn: document.getElementById("manualAddBtn"),
         saveRecognizedBtn: document.getElementById("saveRecognizedBtn"),
@@ -1093,8 +1155,65 @@
         imgEl.src = src;
         imgEl.onerror = () => {
           imgEl.onerror = null;
-          imgEl.src = placeholderDataUrl(fallbackSeed);
+          imgEl.src = brandAvatarDataUrl(fallbackSeed);
         };
+      }
+
+      function hashCode(str) {
+        let h = 0;
+        const s = safeText(str);
+        for (let i = 0; i < s.length; i++) {
+          h = (h << 5) - h + s.charCodeAt(i);
+          h |= 0;
+        }
+        return h;
+      }
+
+      function brandHue(brand) {
+        const b = safeText(brand).trim();
+        if (!b) return 330;
+        return Math.abs(hashCode(b)) % 360;
+      }
+
+      function brandGlyph(brand) {
+        const b = safeText(brand).trim();
+        if (!b) return "💄";
+        const ascii = b.match(/[A-Za-z]/);
+        if (ascii) return ascii[0].toUpperCase();
+        const pinyinOverrides = {
+          毛戈平: "M",
+          花知晓: "H",
+          橘朵: "J",
+          彩棠: "C",
+          巴贝拉: "B",
+          花洛莉亚: "H",
+        };
+        if (pinyinOverrides[b]) return pinyinOverrides[b];
+        return b[0] || "💄";
+      }
+
+      function brandAvatarDataUrl(brand) {
+        const hue = brandHue(brand);
+        const bg = "hsl(" + hue + ", 70%, 70%)";
+        const glyph = brandGlyph(brand);
+        const fontSize = glyph.length === 1 && glyph !== "💄" && glyph !== "?" ? 92 : 78;
+        const svg =
+          "<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'>" +
+          "<circle cx='96' cy='96' r='92' fill='" +
+          bg +
+          "'/>" +
+          "<text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='" +
+          fontSize +
+          "' font-weight='900' fill='rgba(255,255,255,0.96)' font-family='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto'>" +
+          glyph +
+          "</text></svg>";
+        return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      }
+
+      function productImageSrc(p, { shape = "circle" } = {}) {
+        const url = safeText(p?.imageUrl).trim();
+        if (url) return url;
+        return brandAvatarDataUrl(p?.brand);
       }
 
       function placeholderDataUrl(seed) {
@@ -1114,7 +1233,7 @@
           "<text x='50%' y='52%' dominant-baseline='middle' text-anchor='middle' font-size='56' fill='rgba(255,255,255,0.95)' font-family='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto'>" +
           txt +
           "</text></svg>";
-        return "data:image/svg+xml;charset=utf-8," + svg;
+        return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
       }
 
       function loadProducts() {
@@ -1145,7 +1264,7 @@
             brand: "毛戈平",
             productName: "水奶油",
             shade: "#803",
-            imageUrl: SAMPLE_IMAGE_URLS.maogep,
+            imageUrl: "",
             notes: "",
             source: "",
             createdAt: now,
@@ -1158,7 +1277,7 @@
             brand: "花知晓",
             productName: "提亮遮瑕液",
             shade: "PH04",
-            imageUrl: SAMPLE_IMAGE_URLS.flower,
+            imageUrl: "",
             notes: "",
             source: "",
             createdAt: now,
@@ -1171,7 +1290,7 @@
             brand: "RC",
             productName: "腮红丝子",
             shade: "",
-            imageUrl: SAMPLE_IMAGE_URLS.blush,
+            imageUrl: "",
             notes: "",
             source: "",
             createdAt: now,
@@ -1181,30 +1300,6 @@
         ];
 
         saveProducts(seeded);
-      }
-
-      function migrateSampleImages() {
-        const products = loadProducts();
-        let changed = false;
-
-        for (const p of products) {
-          const url = safeText(p.imageUrl);
-          const needs = !url || url.startsWith("data:image/svg+xml");
-          if (!needs) continue;
-
-          if (p.brand === "毛戈平" && p.productName === "水奶油") {
-            p.imageUrl = SAMPLE_IMAGE_URLS.maogep;
-            changed = true;
-          } else if (p.brand === "花知晓" && p.productName === "提亮遮瑕液") {
-            p.imageUrl = SAMPLE_IMAGE_URLS.flower;
-            changed = true;
-          } else if (p.brand === "RC" && p.productName === "腮红丝子") {
-            p.imageUrl = SAMPLE_IMAGE_URLS.blush;
-            changed = true;
-          }
-        }
-
-        if (changed) saveProducts(products);
       }
 
       function getLatestPrice(product) {
@@ -1227,6 +1322,14 @@
         if (list.length === 0) return "";
         const sorted = [...list].sort((a, b) => parseISODate(b.date) - parseISODate(a.date));
         return sorted[0]?.date || "";
+      }
+
+      function oneLineNote(product) {
+        const a = safeText(product?.notes).trim();
+        if (a) return a.split(/\r?\n/)[0].trim();
+        const b = safeText(product?.originalText).trim();
+        if (b) return b;
+        return "";
       }
 
       function findProduct(products, id) {
@@ -1368,65 +1471,44 @@
             const shell = document.createElement("div");
             shell.className = "card-shell";
 
-            const faceFront = document.createElement("div");
-            faceFront.className = "card-face";
-
-            const img = document.createElement("img");
-            img.className = "card-img";
-            img.alt = "产品图片";
-            img.loading = "lazy";
-            img.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
-
-            const brand = document.createElement("div");
-            brand.className = "brand";
-            brand.textContent = p.brand || "—";
-
-            const pname = document.createElement("div");
-            pname.className = "pname";
-            pname.textContent = p.productName || "未命名";
-
-            const shade = document.createElement("div");
-            shade.className = "shade";
-            shade.textContent = p.shade ? "色号：" + p.shade : p.category || "";
-
-            const price = document.createElement("div");
-            price.className = "price";
-
             const latest = getLatestPrice(p);
-            const val = document.createElement("div");
-            val.className = "val";
-            val.textContent = latest == null ? "—" : formatMoney(latest);
+            const hue = brandHue(p.brand);
+            const bg = document.createElement("div");
+            bg.className = "card-bg";
+            if (safeText(p.imageUrl).trim()) {
+              bg.style.backgroundImage = "url('" + safeText(p.imageUrl).replace(/'/g, "%27") + "')";
+            } else {
+              bg.style.background = "linear-gradient(135deg, hsl(" + hue + ", 70%, 82%), hsl(" + hue + ", 70%, 66%))";
+            }
 
-            const badge = document.createElement("div");
-            badge.className = "badge";
-            badge.textContent = p.priceTracking ? "追踪中" : p.category || "—";
+            const avatar = document.createElement("img");
+            avatar.className = "card-avatar";
+            avatar.alt = "品牌占位符";
+            avatar.loading = "lazy";
+            setImgWithFallback(avatar, productImageSrc(p), p.brand || "");
 
-            price.append(val, badge);
+            const overlay = document.createElement("div");
+            overlay.className = "card-overlay";
+            const b = document.createElement("div");
+            b.className = "b";
+            b.textContent = p.brand || "—";
+            const n = document.createElement("div");
+            n.className = "n";
+            n.textContent = p.productName || "未命名";
+            const s = document.createElement("div");
+            s.className = "s";
+            s.textContent = p.shade ? "色号：" + p.shade : p.category || "";
+            const pr = document.createElement("div");
+            pr.className = "p";
+            pr.textContent = latest == null ? "" : formatMoney(latest);
+            overlay.append(b, n, s);
+            if (pr.textContent) overlay.appendChild(pr);
 
-            faceFront.append(img, brand, pname, shade, price);
-
-            const faceBack = document.createElement("div");
-            faceBack.className = "card-face card-back";
-            const backTitle = document.createElement("div");
-            backTitle.style.fontWeight = "900";
-            backTitle.textContent = "点击查看详情";
-            const backMeta = document.createElement("div");
-            backMeta.className = "muted";
-            backMeta.style.fontSize = "0.9rem";
-            backMeta.style.lineHeight = "1.5";
-            backMeta.textContent =
-              "分类：" + (p.category || "—") + "  ·  低价：" + (getLowestPrice(p) == null ? "—" : formatMoney(getLowestPrice(p)));
-            faceBack.append(backTitle, backMeta);
-
-            shell.append(faceFront, faceBack);
+            shell.append(bg, avatar, overlay);
             btn.appendChild(shell);
 
             btn.addEventListener("click", () => {
-              shell.classList.add("is-flipping");
-              setTimeout(() => {
-                shell.classList.remove("is-flipping");
-                openDetail(p.id);
-              }, 260);
+              openDetail(p.id);
             });
 
             return btn;
@@ -1448,7 +1530,7 @@
             img.className = "thumb";
             img.alt = "缩略图";
             img.loading = "lazy";
-            img.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
+            setImgWithFallback(img, productImageSrc(p, { shape: "circle" }), p.brand || "");
 
             const main = document.createElement("div");
             main.className = "li-main";
@@ -1533,60 +1615,34 @@
         const latest = getLatestPrice(p);
         const low = getLowestPrice(p);
 
-        els.detailFlipBtn.classList.remove("is-flipped");
-        const front = document.createElement("div");
-        front.className = "big-face front";
-        const img = document.createElement("img");
-        img.className = "big-img";
-        img.alt = "产品图片";
-        img.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
+        const hero = document.createElement("div");
+        hero.className = "detail-hero";
+
+        const avatar = document.createElement("img");
+        avatar.className = "detail-avatar";
+        avatar.alt = "产品图片";
+        avatar.loading = "lazy";
+        setImgWithFallback(avatar, productImageSrc(p), p.brand || "");
+
         const meta = document.createElement("div");
-        meta.className = "big-meta";
+        meta.className = "detail-hero-meta";
         const b = document.createElement("div");
-        b.className = "muted";
-        b.style.fontSize = "0.9rem";
+        b.className = "b";
         b.textContent = p.brand || "—";
-        const name = document.createElement("div");
-        name.style.fontWeight = "900";
-        name.style.fontSize = "1.1rem";
-        name.textContent = p.productName || "未命名";
-        const sh = document.createElement("div");
-        sh.className = "muted";
-        sh.textContent = p.shade ? "色号：" + p.shade : "分类：" + (p.category || "—");
+        const n = document.createElement("div");
+        n.className = "n";
+        n.textContent = p.productName || "未命名";
+        const s = document.createElement("div");
+        s.className = "s";
+        s.textContent = (p.shade ? "色号：" + p.shade : "") || (p.category ? "分类：" + p.category : "");
         const pr = document.createElement("div");
-        pr.style.marginTop = "0.35rem";
-        pr.innerHTML =
-          "<span style='color:var(--muted)'>当前价格：</span><span style='font-weight:900;color:var(--green)'>" +
-          (latest == null ? "—" : formatMoney(latest)) +
-          "</span>";
-        meta.append(b, name, sh, pr);
-        front.append(img, meta);
+        pr.className = "p";
+        pr.textContent = latest == null ? "" : "当前价格：" + formatMoney(latest);
+        meta.append(b, n, s);
+        if (pr.textContent) meta.appendChild(pr);
 
-        const back = document.createElement("div");
-        back.className = "big-face back";
-        back.style.padding = "0.9rem";
-        const t = document.createElement("div");
-        t.style.fontWeight = "900";
-        t.textContent = "产品概览";
-        const d = document.createElement("div");
-        d.className = "muted";
-        d.style.marginTop = "0.35rem";
-        d.style.lineHeight = "1.6";
-        d.textContent =
-          "分类：" +
-          (p.category || "—") +
-          " · 低价：" +
-          (low == null ? "—" : formatMoney(low)) +
-          " · 更新时间：" +
-          (getLastUpdated(p) || "—");
-        const hint = document.createElement("div");
-        hint.className = "muted";
-        hint.style.marginTop = "0.8rem";
-        hint.style.fontSize = "0.9rem";
-        hint.textContent = "点击卡片翻转回正面";
-        back.append(t, d, hint);
-
-        els.detailBigInner.replaceChildren(front, back);
+        hero.append(avatar, meta);
+        els.detailHero.replaceChildren(hero);
 
         const infoWrap = document.createElement("div");
         infoWrap.className = "panel";
@@ -1600,6 +1656,7 @@
           ...kvRow("品牌", p.brand || "—"),
           ...kvRow("产品", p.productName || "—"),
           ...kvRow("色号", p.shade || "—"),
+          ...(safeText(p.originalText).trim() ? kvRow("原文", safeText(p.originalText).trim()) : []),
           ...kvRow("添加", (p.createdAt || "").slice(0, 10) || "—")
         );
         infoWrap.append(infoTitle, kv);
@@ -1763,23 +1820,26 @@
         state.addFlow.imageDataUrl = "";
         state.addFlow.items = [];
         els.uploadPreview.style.display = "none";
+        els.recognizedImageWrap.hidden = true;
         els.fileInput.value = "";
         updateAddStepUI();
       }
 
       function simulateRecognize() {
-        state.addFlow.items = [
-          { tempId: uid(), category: "粉底", brand: "毛戈平", productName: "水奶油", shade: "#803", imageUrl: SAMPLE_IMAGE_URLS.maogep },
-          { tempId: uid(), category: "遮瑕", brand: "花知晓", productName: "提亮遮瑕液", shade: "PH04", imageUrl: SAMPLE_IMAGE_URLS.flower },
-          { tempId: uid(), category: "腮红", brand: "RC", productName: "腮红丝子", shade: "", imageUrl: SAMPLE_IMAGE_URLS.blush },
-        ];
+        state.addFlow.items = RECOGNITION_PRESET.map((x) => ({
+          tempId: uid(),
+          category: x.category,
+          brand: x.brand,
+          productName: x.productName,
+          shade: x.shade,
+          originalText: x.originalText,
+          imageUrl: "",
+        }));
       }
 
       function renderSampleGallery() {
         const items = [
-          { label: "花知晓", src: SAMPLE_IMAGE_URLS.flower },
-          { label: "毛戈平", src: SAMPLE_IMAGE_URLS.maogep },
-          { label: "腮红", src: SAMPLE_IMAGE_URLS.blush },
+          { label: "清单样例", src: "./清单.jpg" },
         ];
 
         els.sampleGallery.replaceChildren(
@@ -1829,7 +1889,14 @@
             s.style.marginTop = "0.2rem";
             s.style.fontSize = "0.85rem";
             s.textContent = (it.productName || "未命名") + (it.shade ? " " + it.shade : "");
+            const o = document.createElement("div");
+            o.className = "muted";
+            o.style.marginTop = "0.15rem";
+            o.style.fontSize = "0.8rem";
+            o.style.lineHeight = "1.35";
+            o.textContent = safeText(it.originalText);
             main.append(t, s);
+            if (o.textContent) main.appendChild(o);
 
             const ops = document.createElement("div");
             ops.style.display = "flex";
@@ -1891,11 +1958,17 @@
         shade.placeholder = "色号（可选）";
         shade.value = safeText(it.shade);
 
+        const originalText = document.createElement("textarea");
+        originalText.placeholder = "原始文本（可选）";
+        originalText.value = safeText(it.originalText);
+        originalText.style.minHeight = "4.75rem";
+
         const body = [
           fieldWrap("分类", cat),
           fieldWrap("品牌", brand),
           fieldWrap("产品名", name),
           fieldWrap("色号", shade),
+          fieldWrap("原始文本", originalText),
         ];
 
         openOverlay({
@@ -1911,6 +1984,7 @@
                 it.brand = brand.value.trim();
                 it.productName = name.value.trim();
                 it.shade = shade.value.trim();
+                it.originalText = originalText.value.trim();
                 closeOverlay();
                 renderRecognizedList();
               },
@@ -1961,9 +2035,13 @@
         const imgPrev = document.createElement("img");
         imgPrev.className = "card-img";
         imgPrev.alt = "预览";
-        imgPrev.src = p.imageUrl || placeholderDataUrl(p.brand || p.productName || "Beauty");
-        imgPrev.style.aspectRatio = "16 / 10";
-        imgPrev.style.borderRadius = "1rem";
+        setImgWithFallback(imgPrev, productImageSrc(p, { shape: "square" }), p.brand || "");
+        imgPrev.style.width = "5rem";
+        imgPrev.style.height = "5rem";
+        imgPrev.style.borderRadius = "999px";
+        imgPrev.style.objectFit = "cover";
+        imgPrev.style.display = "block";
+        imgPrev.style.marginTop = "0.5rem";
         const imgBtn = document.createElement("button");
         imgBtn.type = "button";
         imgBtn.className = "pill-btn";
@@ -2125,10 +2203,6 @@
           });
         });
 
-        els.detailFlipBtn.addEventListener("click", () => {
-          els.detailFlipBtn.classList.toggle("is-flipped");
-        });
-
         els.saveNotesBtn.addEventListener("click", () => {
           const products = loadProducts();
           const p = findProduct(products, state.selectedProductId);
@@ -2206,7 +2280,7 @@
         });
 
         els.manualAddBtn.addEventListener("click", () => {
-          state.addFlow.items.unshift({ tempId: uid(), category: "其他", brand: "", productName: "", shade: "", imageUrl: state.addFlow.imageDataUrl });
+          state.addFlow.items.unshift({ tempId: uid(), category: "其他", brand: "", productName: "", shade: "", originalText: "", imageUrl: "" });
           renderRecognizedList();
           openEditRecognized(state.addFlow.items[0].tempId);
         });
@@ -2218,7 +2292,8 @@
               brand: (it.brand || "").trim(),
               productName: (it.productName || "").trim(),
               shade: (it.shade || "").trim(),
-              imageUrl: it.imageUrl || placeholderDataUrl(it.brand || it.productName || "Beauty"),
+              originalText: (it.originalText || "").trim(),
+              imageUrl: it.imageUrl || "",
             }))
             .filter((x) => x.brand || x.productName);
 
@@ -2236,6 +2311,7 @@
               brand: it.brand,
               productName: it.productName,
               shade: it.shade,
+              originalText: it.originalText,
               imageUrl: it.imageUrl,
               notes: "",
               source: "",
@@ -2284,19 +2360,17 @@
       }
 
       function goRecognize() {
-        state.addFlow.step = 2;
+        simulateRecognize();
+        state.addFlow.step = 3;
         updateAddStepUI();
-        setTimeout(() => {
-          simulateRecognize();
-          state.addFlow.step = 3;
-          updateAddStepUI();
-          renderRecognizedList();
-        }, 900);
+        const hasImg = !!safeText(state.addFlow.imageDataUrl).trim();
+        els.recognizedImageWrap.hidden = !hasImg;
+        if (hasImg) els.recognizedImagePreview.src = state.addFlow.imageDataUrl;
+        renderRecognizedList();
       }
 
       function boot() {
         seedIfEmpty();
-        migrateSampleImages();
         attachEvents();
         renderSampleGallery();
         state.navStack = [{ page: "home", title: "我的种草清单", canBack: false, showActions: true, tab: "home" }];
